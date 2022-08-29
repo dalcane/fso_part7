@@ -1,21 +1,9 @@
 import { useState } from 'react'
 import {
     BrowserRouter as Router,
-    Routes, Route, Link, useParams
+    Routes, Route, Link, useParams, useNavigate
 } from "react-router-dom"
 
-const Menu = () => {
-  const padding = {
-    paddingRight: 5
-  }
-  return (
-    <div>
-      <a href='#' style={padding}>anecdotes</a>
-      <a href='#' style={padding}>create new</a>
-      <a href='#' style={padding}>about</a>
-    </div>
-  )
-}
 
 const Anecdote = ({anecdotes}) => {
     const id = useParams().id
@@ -64,20 +52,21 @@ const Footer = () => (
 )
 
 const CreateNew = (props) => {
-  const [content, setContent] = useState('')
-  const [author, setAuthor] = useState('')
-  const [info, setInfo] = useState('')
+    const [content, setContent] = useState('')
+    const [author, setAuthor] = useState('')
+    const [info, setInfo] = useState('')
+    const navigate = useNavigate()
 
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    props.addNew({
-      content,
-      author,
-      info,
-      votes: 0
-    })
-  }
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        props.addNew({
+            content,
+            author,
+            info,
+            votes: 0
+        })
+        navigate('/')
+    }
 
   return (
     <div>
@@ -101,6 +90,7 @@ const CreateNew = (props) => {
   )
 
 }
+
 
 const App = () => {
     const padding = {
@@ -128,6 +118,8 @@ const App = () => {
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000)
     setAnecdotes(anecdotes.concat(anecdote))
+      setNotification('Added a new anecdote succesfully!')
+      setTimeout(()=>{setNotification('')},5000)
   }
 
   const anecdoteById = (id) =>
@@ -153,11 +145,13 @@ const App = () => {
             <Link style={padding} to={'about'}> About </Link>
         </div>
 
+        <div>{notification}</div>
+
         <Routes>
             <Route path='/' element={<AnecdoteList anecdotes={anecdotes}/>} />
             <Route path='/anecdotes/:id' element={<Anecdote anecdotes={anecdotes} />}/>
             <Route path='/about' element={<About />} />
-            <Route path='/create' element={<CreateNew addNEw={addNew} />} />
+            <Route path='/create' element={<CreateNew addNew={addNew} />} />
             <Route path='/anecdotes' element={<AnecdoteList anecdotes={anecdotes}/>} />
         </Routes>
 
